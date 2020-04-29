@@ -19,6 +19,7 @@
     "chat_id": "",
     "enabled": false
   },
+  "desktop": false,
   "debug": true,
   "max_text_length": 200,
   "ignore_old_unread": true

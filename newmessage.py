@@ -34,6 +34,8 @@ def notify(author, subject, text, url):
         notify_slack(author, subject, text, url)
     if config['telegram']['enabled']:
         notify_telegram(author, subject, text, url)
+    if config['desktop']:
+        notify_desktop(author, subject, text, url)
     if config['debug']:
         print('{}: [{}] {} {}'.format(author, subject, text, url))
 
@@ -59,8 +61,20 @@ def notify_telegram(author, subject, text, url):
     requests.post("https://api.telegram.org/bot{}/sendMessage".format(config['telegram']['token']),
                   data=payload)
 
+def notify_desktop(author, subject, text, url):
+    n = notify2.Notification(subject,
+                            '{}: {} - {}'.format(author, text, url),
+                            'notification-message-im')
+    n.timeout = 7500
+    n.show()
+
+
 with open(CONFIG_FILE) as config_file:
     config = json.load(config_file)
+
+if config['desktop']:
+    import notify2
+    notify2.init('NewMessage')
 
 r = praw.Reddit(
     user_agent = config['reddit']['user_agent'],
