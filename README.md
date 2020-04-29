@@ -10,9 +10,7 @@ You just need praw, so run:
 
     pip install -r requirements.txt
 
-To install the dependencies. Please note that you will also need `notify2` if you would like to have desktop notifications (Linux only).
-
-You then need to configure copy the `config.json.template` file to `config.json` and update it with the api keys and settings you want. 
+To install the dependencies. You then need to configure copy the `config.json.template` file to `config.json` and update it with the api keys and settings you want. 
 
 ### Reddit 
 Log into your account and go to: https://www.reddit.com/prefs/apps/. Click "create another app", pick a name and description, and set the redirect url to something like `http://localhost:8080`.
@@ -29,3 +27,8 @@ In your server settings create a webhook: https://support.discordapp.com/hc/en-u
 In Telegram, message `/newbot` to @BotFather. Follow the steps and you will receive a token at the end, copy this token to your `config.json`.
 
 To get the chat ID, send your bot a message and open https://api.telegram.org/bot[TOKEN]/getUpdates in your browser, you will find an ID there.
+
+### Desktop notifications
+Desktop notifications are currently only available for Linux.
+
+You will need to install the `notify2` package before enabling desktop notifications.
