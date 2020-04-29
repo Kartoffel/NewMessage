@@ -10,10 +10,6 @@
     "webhook": "",
     "enabled": false
   },
-  "reddit_pm": {
-    "users": [ "" ],
-    "enabled": false
-  },
   "discord": {
     "webhook": "",
     "enabled": false
@@ -23,16 +19,5 @@
     "chat_id": "",
     "enabled": false
   },
-  "keywords": {
-    "list": [
-      "foo",
-      "bar",
-      "cat"
-    ],
-    "enabled": false
-  },
-  "debug": true,
-  "modqueue": true,
-  "new_posts": true,
-  "subreddits": [ "" ]
+  "debug": true
 }
