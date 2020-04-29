@@ -26,6 +26,8 @@ def handle_message(message):
     notify(*send)
 
 def notify(author, subject, text, url):
+    if first and config['ignore_old_unread']:
+        return
     if config['discord']['enabled']:
         notify_discord(author, subject, text, url)
     if config['slack']['enabled']:
@@ -68,6 +70,7 @@ r = praw.Reddit(
     password = config['reddit']['password']
 )
 
+first = True
 inbox_stream = r.inbox.stream(pause_after=-1)    
 
 while True:
@@ -80,6 +83,7 @@ while True:
             if isinstance(item, praw.models.Message):
                 handle_message(item)
 
+        first = False
         time.sleep(5)
     except KeyboardInterrupt:
         print('\n')
