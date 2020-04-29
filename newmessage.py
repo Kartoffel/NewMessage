@@ -1,52 +1,54 @@
+#!/usr/bin/python3
 import sys
 import praw
 import time
 import requests
 import json
+import textwrap
 
 CONFIG_FILE='config.json'
 
-def handle_post(submission):
-    url = submission.shortlink
-    title = submission.title
-    sub = submission.subreddit.display_name
+def shortened_text(text):
+    return textwrap.shorten(text, config['max_text_length'], placeholder='..')
 
-    if config['keywords']['enabled']:
-        if any(x.lower() in post.title.lower() for x in config['keywords']['list']):
-            notify(sub, title, url)
-    else:
-        notify(sub, title, url)
+def handle_comment(comment):
+    send = (comment.author.name,
+            shortened_text(comment.submission.title),
+            shortened_text(comment.body),
+            'https://reddit.com' + comment.context)
+    notify(*send)
 
-def handle_modqueue(item):
-    url = 'https://reddit.com' + item.permalink
-    sub = item.subreddit.display_name
-    notify(sub, 'Modqueue', url)
+def handle_message(message):
+    send = (message.author.name,
+            message.subject,
+            shortened_text(message.body),
+            'https://www.reddit.com/message/inbox/#thing_{}'.format(message.fullname))
+    notify(*send)
 
-def notify(subreddit, title, url):
-    if first: return
+def notify(author, subject, text, url):
     if config['discord']['enabled']:
-        notify_discord(subreddit, title, url)
+        notify_discord(author, subject, text, url)
     if config['slack']['enabled']:
-        notify_slack(subreddit, title, url)
+        notify_slack(author, subject, text, url)
     if config['telegram']['enabled']:
-        notify_telegram(subreddit, title, url)
+        notify_telegram(author, subject, text, url)
     if config['debug']:
-        print(subreddit + ' | ' + title + ' | ' +  url)
+        print('{}: [{}] {} {}'.format(author, subject, text, url))
 
-def notify_discord(subreddit, title, url):
-    message = title + " | <" + url + ">"
+def notify_discord(author, subject, text, url):
+    message = '*{}:* [{}] {} {}'.format(author, subject, text, url)
     payload = { 'content': message }
     headers = { 'Content-Type': 'application/json', }
     requests.post(config['discord']['webhook'], data=json.dumps(payload), headers=headers)
 
-def notify_slack(subreddit, title, url):
-    message = title + " | " + url
+def notify_slack(author, subject, text, url):
+    message = '*{}:* [{}] {} {}'.format(header, body, url)
     payload = { 'text': message }
     headers = { 'Content-Type': 'application/json', }
     requests.post(config['slack']['webhook'], data=json.dumps(payload), headers=headers)
 
-def notify_telegram(subreddit, title, url):
-    message = '<b>[/r/{}]</b> {} - {}'.format(subreddit, title, url)
+def notify_telegram(author, subject, text, url):
+    message = '<b>{}:</b> [{}] {} {}'.format(author, subject, text, url)
     payload = { 
         'chat_id': config['telegram']['chat_id'],
         'text': message,
@@ -66,32 +68,22 @@ r = praw.Reddit(
     password = config['reddit']['password']
 )
 
-first = True
-subreddits = '+'.join(config['subreddits'])
-modqueue_stream = (r.subreddit('mod').mod.stream.modqueue(pause_after=-1)
-                   if config['modqueue'] else [])
-submission_stream = (r.subreddit(subreddits).stream.submissions(pause_after=-1)
-                     if config['new_posts'] else [])
+inbox_stream = r.inbox.stream(pause_after=-1)    
 
 while True:
     try:
-        for item in modqueue_stream:
+        for item in inbox_stream:
             if item is None:
                 break
-            handle_modqueue(item)
+            if isinstance(item, praw.models.Comment):
+                handle_comment(item)
+            if isinstance(item, praw.models.Message):
+                handle_message(item)
 
-        for submission in submission_stream:
-            if submission is None:
-                break
-            handle_post(submission)
-
-        first = False
-        time.sleep(1)
+        time.sleep(5)
     except KeyboardInterrupt:
         print('\n')
         sys.exit(0)
     except Exception as e:
         print('Error:', e)
         time.sleep(5)
-
-

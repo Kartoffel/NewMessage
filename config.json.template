@@ -19,5 +19,6 @@
     "chat_id": "",
     "enabled": false
   },
-  "debug": true
+  "debug": true,
+  "max_text_length": 200
 }

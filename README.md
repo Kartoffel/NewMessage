@@ -4,6 +4,8 @@ _Based on [NewPost](https://github.com/bag-man/NewPost) by Owen Garland._
 
 This script will monitor your reddit inbox, and send push notifications to an IM platform of your choice. Currently, Slack, Discord, and Telegram are supported.
 
+PLEASE NOTE: At the moment this will only notify on new reddit messages, **not** new chats. I hope to add support for chats once reddit adds them to its API specs, but for now chats are still an experimental feature.
+
 You just need praw, so run:
 
     pip install -r requirements.txt
