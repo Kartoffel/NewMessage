@@ -1,6 +1,6 @@
 # Unread Reddit inbox message alert
 
-_Based on [NewPost by bag-man](https://github.com/bag-man/NewPost)._
+_Based on [NewPost](https://github.com/bag-man/NewPost) by Owen Garland._
 
 This script will monitor your reddit inbox, and send push notifications to an IM platform of your choice. Currently, Slack, Discord, and Telegram are supported.
 
