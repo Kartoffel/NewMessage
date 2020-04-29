@@ -1,16 +1,16 @@
 [Unit]
-Description=NewPost
+Description=NewMessage
 
 [Service]
-ExecStart=/usr/bin/python newpost.py 
-WorkingDirectory=/home/owg1/Projects/NewPost/
+ExecStart=/usr/bin/python newmessage.py 
+WorkingDirectory=/home/niek/NewMessage/
 Restart=always
 RuntimeMaxSec=604800
 RestartSec=10 
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=newpost
-User=owg1
+SyslogIdentifier=newmessage
+User=niek
 
 [Install]
 WantedBy=multi-user.target
